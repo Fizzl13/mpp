@@ -78,6 +78,15 @@ export const STRIPE_PAYMENT: PaymentDefaults = {
 };
 
 export interface EndpointDef {
+  /** Safe, unauthenticated fixture. Set false for routes that must never be probed. */
+  healthCheck?:
+    | false
+    | {
+        /** Concrete route path, including any query parameters, relative to serviceUrl. */
+        path?: string;
+        /** JSON body for a POST that is safe to repeat without payment or credentials. */
+        body?: Record<string, unknown>;
+      };
   /** Route string: "METHOD /path" (without service slug prefix) */
   route: string;
   /** Description of what this endpoint does */
@@ -163,42 +172,49 @@ export const services: ServiceDef[] = [
     ],
     endpoints: [
       {
+        healthCheck: false,
         route: "GET /get-card",
         desc: "Order a US prepaid card",
         dynamic: true,
         amountHint: "$5 to $1,000 card value",
       },
       {
+        healthCheck: false,
         route: "GET /order-intl-card",
         desc: "Order an international prepaid card",
         dynamic: true,
         amountHint: "$103.80 to $1,038 including fees",
       },
       {
+        healthCheck: false,
         route: "GET /fund-card-balance",
         desc: "Load a reloadable card balance",
         dynamic: true,
         amountHint: "$5 to $1,000",
       },
       {
+        healthCheck: false,
         route: "GET /order-gift-card",
         desc: "Order a gift card",
         dynamic: true,
         amountHint: "$5 to $9,432 depending on brand and value",
       },
       {
+        healthCheck: false,
         route: "GET /get-push-to-card",
         desc: "Send money to a debit card (USD, EUR, GBP)",
         dynamic: true,
         amountHint: "$11.50 to $10,000 including fees",
       },
       {
+        healthCheck: false,
         route: "GET /send-payment",
         desc: "Send a Venmo or PayPal payment",
         dynamic: true,
         amountHint: "$6.50 to $1,049 including fees",
       },
       {
+        healthCheck: false,
         route: "GET /send-bank-payment",
         desc: "Send dollars to a bank account",
         dynamic: true,
@@ -1117,6 +1133,7 @@ export const services: ServiceDef[] = [
     docsBase: "https://context7.com/websites/codex_io/llms.txt",
     endpoints: [
       {
+        healthCheck: { body: { query: "{ __typename }" } },
         route: "POST /graphql",
         desc: "GraphQL query (token data, trades, liquidity, NFTs, wallets)",
         amount: "1000",
@@ -1254,6 +1271,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: { query: "Machine Payments Protocol" } },
         route: "POST /search",
         desc: "Neural web search across all search types (instant, auto, fast, deep, deep-reasoning)",
         dynamic: true,
@@ -1947,6 +1965,9 @@ export const services: ServiceDef[] = [
         docs: "https://parallelmpp.dev/#responses",
       },
       {
+        healthCheck: {
+          body: { mode: "one-shot", query: "Machine Payments Protocol" },
+        },
         route: "POST /api/search",
         desc: "Search the web",
         amount: "10000",
@@ -2062,6 +2083,9 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: {
+          body: { id: 1, jsonrpc: "2.0", method: "eth_chainId", params: [] },
+        },
         route: "POST /",
         desc: "JSON-RPC calls - $0.001 per call",
         amount: "1000",
@@ -2093,6 +2117,15 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: {
+          body: {
+            id: 1,
+            jsonrpc: "2.0",
+            method: "eth_blockNumber",
+            params: [],
+          },
+          path: "/tempo-mainnet",
+        },
         route: "POST /:network",
         desc: "JSON-RPC calls - $0.001 per call",
         amount: "1000",
@@ -3734,6 +3767,7 @@ export const services: ServiceDef[] = [
     payments: [STRIPE_PAYMENT],
     endpoints: [
       {
+        healthCheck: false,
         route: "GET /buy/:slug",
         desc: "Purchase a sandwich",
         dynamic: true,
@@ -3961,6 +3995,7 @@ export const services: ServiceDef[] = [
         unitType: "request",
       },
       {
+        healthCheck: { body: {} },
         route: "POST /alphavantage/market-status",
         desc: "Market Status",
         amount: "8000",
@@ -4235,6 +4270,7 @@ export const services: ServiceDef[] = [
         unitType: "request",
       },
       {
+        healthCheck: { body: {} },
         route: "POST /billboard/get-price",
         desc: "Get Price",
       },
@@ -4263,6 +4299,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: { q: "Machine Payments Protocol" } },
         route: "POST /brave/web-search",
         desc: "Web Search",
         amount: "35000",
@@ -4328,6 +4365,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: { LOOKUP: "example.com" } },
         route: "POST /builtwith/domain",
         desc: "Domain Lookup",
         amount: "55000",
@@ -4514,6 +4552,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: { ids: "bitcoin", vs_currencies: "usd" } },
         route: "POST /coingecko/simple-price",
         desc: "Simple Price",
         amount: "60000",
@@ -4679,6 +4718,7 @@ export const services: ServiceDef[] = [
         unitType: "request",
       },
       {
+        healthCheck: { body: {} },
         route: "POST /deepgram/list-models",
         desc: "List Models",
         amount: "4000",
@@ -4721,6 +4761,7 @@ export const services: ServiceDef[] = [
         amountHint: "$0.025+ (scales with text length)",
       },
       {
+        healthCheck: { body: {} },
         route: "POST /deepl/languages",
         desc: "Languages",
         amount: "5000",
@@ -4763,6 +4804,7 @@ export const services: ServiceDef[] = [
         amountHint: "Token dependent (~$0.003–$0.005)",
       },
       {
+        healthCheck: { body: {} },
         route: "POST /deepseek/list-models",
         desc: "List Models",
         amount: "3000",
@@ -4937,6 +4979,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: { cik: "0000320193" } },
         route: "POST /edgar/company-submissions",
         desc: "Company Submissions",
         amount: "8000",
@@ -4979,6 +5022,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: { q: "Apple" } },
         route: "POST /edgar-search/search",
         desc: "Search Filings",
         amount: "8000",
@@ -5158,6 +5202,7 @@ export const services: ServiceDef[] = [
         amountHint: "$0.005 – $0.10 (varies by model and tokens)",
       },
       {
+        healthCheck: { body: {} },
         route: "POST /groq/models",
         desc: "List Models",
         amount: "5000",
@@ -5220,6 +5265,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: { domain: "example.com" } },
         route: "POST /hunter/domain-search",
         desc: "Domain Search",
         dynamic: true,
@@ -5356,6 +5402,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: { ip: "8.8.8.8" } },
         route: "POST /ipinfo/ip-lite",
         desc: "IP Lite",
         amount: "1000",
@@ -5410,6 +5457,7 @@ export const services: ServiceDef[] = [
         unitType: "request",
       },
       {
+        healthCheck: { body: {} },
         route: "POST /judge0/list-languages",
         desc: "List Languages",
         amount: "5000",
@@ -5446,6 +5494,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: { q: "San Francisco" } },
         route: "POST /mapbox/geocode-forward",
         desc: "Forward Geocode",
         amount: "3750",
@@ -5572,6 +5621,7 @@ export const services: ServiceDef[] = [
         unitType: "request",
       },
       {
+        healthCheck: { body: {} },
         route: "POST /mistral/models",
         desc: "List Models",
         amount: "5000",
@@ -5602,6 +5652,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: { lat: 37.7749, lon: -122.4194 } },
         route: "POST /openweather/current-weather",
         desc: "Current Weather",
         amount: "6000",
@@ -5674,6 +5725,7 @@ export const services: ServiceDef[] = [
         amountHint: "Model-dependent (~$0.005–$0.02)",
       },
       {
+        healthCheck: { body: { query: ["Machine Payments Protocol"] } },
         route: "POST /perplexity/search",
         desc: "Web Search",
         dynamic: true,
@@ -5748,6 +5800,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: { city: "San Francisco", state: "CA", limit: 1 } },
         route: "POST /rentcast/properties",
         desc: "Property Records",
         amount: "33000",
@@ -5850,6 +5903,7 @@ export const services: ServiceDef[] = [
         unitType: "request",
       },
       {
+        healthCheck: { body: {} },
         route: "POST /replicate/list-models",
         desc: "List Models",
         amount: "4000",
@@ -6205,6 +6259,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: { query: "Machine Payments Protocol" } },
         route: "POST /tavily/search",
         desc: "Search",
         dynamic: true,
@@ -6368,6 +6423,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: { i: "1+1" } },
         route: "POST /wolframalpha/short-answer",
         desc: "Short Answer",
         amount: "55000",
@@ -7057,6 +7113,7 @@ export const services: ServiceDef[] = [
         unitType: "request",
       },
       {
+        healthCheck: { body: { query: "coffee San Francisco", page_size: 1 } },
         route: "POST /api/v1/search",
         desc: "Search local businesses by natural language query with 22+ filter categories.",
         amount: "10000",
@@ -7384,6 +7441,9 @@ export const services: ServiceDef[] = [
         unitType: "request",
       },
       {
+        healthCheck: {
+          path: "/companies/enrich?li_company_url=https%3A%2F%2Fwww.linkedin.com%2Fcompany%2Fstripe%2F",
+        },
         route: "GET /companies/enrich",
         desc: "Get comprehensive company information from a LinkedIn Company URL. Returns company details, industry, size, and more.",
         amount: "90000",
@@ -7462,6 +7522,9 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: {
+          body: { query: "Machine Payments Protocol", max_results: 1 },
+        },
         route: "POST /v1/search",
         desc: "Search the web and return matching documents with URLs and content.",
         amount: "6250",
@@ -7887,6 +7950,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { path: "/api/v1/organizations/enrich?domain=stripe.com" },
         route: "GET /api/v1/organizations/enrich",
         desc: "Enrich a company by domain. Returns industry, revenue, employee count, funding, locations, and more.",
         amount: "10000",
@@ -8110,6 +8174,9 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: {
+          path: "/api/v1/last-48?latitude=37.7749&longitude=-122.4194",
+        },
         route: "GET /api/v1/last-48",
         desc: "Total precipitation in the last 48 hours for the given location(s).",
         dynamic: true,
@@ -8216,6 +8283,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: {} },
         route: "POST /company/funding",
         desc: "Start async retrieval of company funding history and investment details.",
         amount: "578000",
@@ -8813,6 +8881,7 @@ export const services: ServiceDef[] = [
         unitType: "request",
       },
       {
+        healthCheck: { path: "/v1/brand/retrieve?domain=stripe.com" },
         route: "GET /v1/brand/retrieve",
         desc: "Retrieve logos, backdrops, colors, industry, description, and more from any domain",
         amount: "30000",
@@ -8953,6 +9022,7 @@ export const services: ServiceDef[] = [
         unitType: "request",
       },
       {
+        healthCheck: { path: "/v2/company_clean/enrich?website=stripe.com" },
         route: "GET /v2/company_clean/enrich",
         desc: "Look up a company by its website domain and get a full cleaned company profile. This is the easiest way to get company",
         amount: "42000",
@@ -9087,6 +9157,13 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: {
+          body: {
+            q: "Machine Payments Protocol",
+            depth: "standard",
+            outputType: "searchResults",
+          },
+        },
         route: "POST /search",
         desc: "The /search endpoint allows you to retrieve web content.",
         amount: "10000",
@@ -9842,6 +9919,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { path: "/v1/search?q=Machine%20Payments%20Protocol" },
         route: "GET /v1/search",
         desc: "Fast, high-quality search API with intelligent ranking, instant answers, and result enrichment.",
         amount: "10000",
@@ -9894,6 +9972,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: {} },
         route: "POST /v3/search/companies",
         desc: "Search for companies using filters (industry, size, location, technologies, revenue, headcount growth, etc.) and/or",
         dynamic: true,
@@ -10357,6 +10436,7 @@ export const services: ServiceDef[] = [
     payments: [TEMPO_PAYMENT],
     endpoints: [
       {
+        healthCheck: { body: { q: "Machine Payments Protocol" } },
         route: "POST /autocomplete",
         desc: "Google Autocomplete - returns search query suggestions based on a prefix. Use for keyword research, SEO, understanding",
         amount: "2000",
