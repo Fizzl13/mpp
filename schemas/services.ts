@@ -154,6 +154,7 @@ export const services: ServiceDef[] = [
       "mpp",
       "usdc",
       "base",
+      "tempo",
     ],
     status: "active",
     docs: {
@@ -165,6 +166,7 @@ export const services: ServiceDef[] = [
     realm: "x402-doctor.fizzl.eu",
     intent: "charge",
     payments: [
+      TEMPO_PAYMENT,
       {
         method: "evm",
         currency: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
